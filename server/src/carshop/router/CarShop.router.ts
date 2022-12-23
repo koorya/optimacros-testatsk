@@ -3,6 +3,8 @@ import * as carController from "../controller/Car.controller";
 
 const router = express.Router();
 
-router.post(`/addCar`, carController.addCar);
+router.post(`/car`, carController.addCar);
+router.get(`/cars`, carController.listCar);
+router.get(`/cars/:id`, carController.getCarById);
 
 export { router };
