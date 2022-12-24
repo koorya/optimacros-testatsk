@@ -64,3 +64,18 @@ export const getCarById: RequestHandler<{ id: string }, {}, {}> = async (
     next(error);
   }
 };
+
+export const deleteCarById: RequestHandler<{ id: string }, {}, {}> = async (
+  req,
+  res,
+  next
+) => {
+  const { id } = req.params;
+  try {
+    const result = await Car.findByIdAndRemove(id);
+    if (!result) return res.status(404).json({ error: "Not found" });
+    res.json({ removedCarId: id });
+  } catch (error) {
+    next(error);
+  }
+};

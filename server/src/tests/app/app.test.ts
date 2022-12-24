@@ -116,6 +116,30 @@ describe("fetch car by id", () => {
 describe("remove car", () => {
   const totalQty = 5;
   const getData = useMongoMemoryServer(() => fillDB(totalQty));
-  it("should return removed carId", async () => {});
-  it("should return error invalid carId", async () => {});
+  it("should return removed carId", async () => {
+    const response = await request(app).get("/carshop/cars");
+    expect(response.statusCode).toBe(200);
+    const carId: string = response.body[2].id;
+    expect(carId.length).toBeGreaterThan(1);
+    const {
+      body: { removedCarId },
+    } = await request(app).delete(`/carshop/cars/${carId}`);
+    expect(removedCarId).toBe(carId);
+
+    const { body: carsAfterDelete } = await request(app).get("/carshop/cars");
+    expect(carsAfterDelete).toHaveLength(4);
+    expect(
+      !carsAfterDelete.find(({ id }: { id: string }) => id === carId)
+    ).toBe(true);
+  });
+  it("should return error invalid carId", async () => {
+    const {
+      statusCode,
+      body: { error },
+    } = await request(app).delete(
+      `/carshop/cars/${"63a736f204481a5b638000cc"}`
+    );
+    expect(statusCode).toBe(404);
+    expect(error).toBe("Not found");
+  });
 });
