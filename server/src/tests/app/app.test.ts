@@ -44,6 +44,18 @@ describe("list cars", () => {
     expect(response.statusCode).toBe(200);
     expect(response.body).toHaveLength(totalQty);
   });
+  it("should return limited car list", async () => {
+    const response1 = await request(app).get("/carshop/cars?offset=5&limit=3");
+    expect(response1.statusCode).toBe(200);
+    expect(response1.body).toHaveLength(3);
+
+    const response2 = await request(app).get("/carshop/cars?offset=7&limit=2");
+    expect(response2.statusCode).toBe(200);
+    expect(response2.body).toHaveLength(2);
+
+    expect(response1.body[2].id).toBe(response2.body[0].id);
+  });
+
   it("should return car list sorted by price", async () => {
     const response = await request(app).get("/carshop/cars?sort=price");
     expect(response.statusCode).toBe(200);
