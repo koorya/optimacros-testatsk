@@ -45,7 +45,7 @@ describe("list cars", () => {
     expect(response.body).toHaveLength(totalQty);
   });
   it("should return car list sorted by price", async () => {
-    const response = await request(app).get("/carshop/cars?sort=+price");
+    const response = await request(app).get("/carshop/cars?sort=price");
     expect(response.statusCode).toBe(200);
     expect(getData()).toHaveLength(totalQty);
     expect(response.body).toHaveLength(totalQty);
@@ -56,9 +56,34 @@ describe("list cars", () => {
       isArraySorted<CarType>(arr, ({ price: A }, { price: B }) => A - B)
     ).toBe(true);
   });
-  it("should return car list sorted by year", async () => {});
+  it("should return car list sorted by year and price desc", async () => {
+    const response = await request(app).get(
+      "/carshop/cars?sort=production_year,-price"
+    );
+    expect(response.statusCode).toBe(200);
+    expect(getData()).toHaveLength(totalQty);
+    expect(response.body).toHaveLength(totalQty);
 
-  it("should return error unsupported sort", async () => {});
+    const arr = response.body;
+
+    expect(
+      isArraySorted<CarType>(
+        arr,
+        (
+          { price: pA, production_year: yA },
+          { price: pB, production_year: yB }
+        ) => (yA - yB < 0 ? -1 : yA == yB ? pB - pA : 1)
+      )
+    ).toBe(true);
+  });
+
+  it("should return error Invalid sort query", async () => {
+    const response = await request(app).get(
+      "/carshop/cars?sort=price,yye,-name"
+    );
+    expect(response.statusCode).toBe(500);
+    expect(response.body.error).toBe("Invalid sort query");
+  });
 });
 
 describe("fetch car by id", () => {

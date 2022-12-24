@@ -1,4 +1,6 @@
 import { RequestHandler } from "express";
+import { SortOrder } from "mongoose";
+import { parseSortStr } from "../../ulils/queryStringParser";
 import { Car, CarType } from "../model/Car.model";
 
 export const addCar: RequestHandler<{}, {}, CarType> = async (
@@ -21,11 +23,9 @@ export const listCar: RequestHandler<{}, {}, {}, { sort?: string }> = async (
   next
 ) => {
   const { sort } = req.query;
-  if (sort) {
-    sort.matchAll(/(\+|\-)?(price|name|year),?/g);
-  }
   try {
-    const result = await Car.find();
+    const sortObj = sort ? parseSortStr(sort) : null;
+    const result = await Car.find().sort(sortObj);
     res.json(
       result.map(({ _id, brand, name, price, production_year }) => ({
         id: _id,
