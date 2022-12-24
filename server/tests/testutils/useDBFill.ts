@@ -1,4 +1,4 @@
-import { Car, CarType } from "../../carshop/model/Car.model";
+import { Car, CarType } from "../../src/carshop/model/Car.model";
 
 export const fillDB = async (qty: number) => {
   const brands = ["volga", "lada", "toyota", "nissan"];

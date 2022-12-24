@@ -1,10 +1,10 @@
-import { app } from "../../app/app";
+import { app } from "../../src/app/app";
 
 import request from "supertest";
 import { useMongoMemoryServer } from "../testutils/mongo.hook";
 import { fillDB } from "../testutils/useDBFill";
 import { isArraySorted } from "../testutils/isAlreadySorted";
-import { CarType } from "../../carshop/model/Car.model";
+import { CarType } from "../../src/carshop/model/Car.model";
 
 describe("create car", () => {
   useMongoMemoryServer();

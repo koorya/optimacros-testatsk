@@ -1,4 +1,4 @@
-import { parseSortStr } from "../../ulils/queryStringParser";
+import { parseSortStr } from "../../src/ulils/queryStringParser";
 
 describe("query string", () => {
   it("should return search object", () => {
