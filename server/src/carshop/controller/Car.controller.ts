@@ -44,10 +44,23 @@ export const listCar: RequestHandler<
   }
 };
 
-export const getCarById: RequestHandler<{}, {}, CarType> = async (
+export const getCarById: RequestHandler<{ id: string }, {}, {}> = async (
   req,
   res,
   next
 ) => {
-  throw Error("Method indefined");
+  const { id } = req.params;
+  try {
+    const result = await Car.findById(id);
+    if (!result) return res.status(404).json({ error: "Not found" });
+    res.json({
+      id,
+      brand: result.brand,
+      name: result.name,
+      price: result.price,
+      production_year: result.production_year,
+    });
+  } catch (error) {
+    next(error);
+  }
 };

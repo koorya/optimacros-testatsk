@@ -29,13 +29,6 @@ describe("create car", () => {
   });
 });
 
-describe("remove car", () => {
-  useMongoMemoryServer();
-  fillDB(1);
-  it("should return removed carId", async () => {});
-  it("should return error invalid carId", async () => {});
-});
-
 describe("list cars", () => {
   const totalQty = 15;
   const getData = useMongoMemoryServer(() => fillDB(totalQty));
@@ -99,10 +92,30 @@ describe("list cars", () => {
 });
 
 describe("fetch car by id", () => {
-  useMongoMemoryServer();
-  fillDB(5);
+  const totalQty = 5;
+  const getData = useMongoMemoryServer(() => fillDB(totalQty));
   it("should return car", async () => {
-    // const response = await request(app).get("/carshop/cars/");
+    const response = await request(app).get("/carshop/cars");
+    expect(response.statusCode).toBe(200);
+    const carId: string = response.body[2].id;
+    expect(carId.length).toBeGreaterThan(1);
+    const { body: car } = await request(app).get(`/carshop/cars/${carId}`);
+    expect(car).toHaveProperty("name");
+    expect(car).toStrictEqual(response.body[2]);
   });
+  it("should return error invalid carId", async () => {
+    const {
+      statusCode,
+      body: { error },
+    } = await request(app).get(`/carshop/cars/${"63a736f204481a5b638000cc"}`);
+    expect(statusCode).toBe(404);
+    expect(error).toBe("Not found");
+  });
+});
+
+describe("remove car", () => {
+  const totalQty = 5;
+  const getData = useMongoMemoryServer(() => fillDB(totalQty));
+  it("should return removed carId", async () => {});
   it("should return error invalid carId", async () => {});
 });
