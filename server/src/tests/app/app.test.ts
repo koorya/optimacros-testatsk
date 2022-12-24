@@ -2,7 +2,9 @@ import { app } from "../../app/app";
 
 import request from "supertest";
 import { useMongoMemoryServer } from "../testutils/mongo.hook";
-import { useDBFill } from "../testutils/useDBFill";
+import { fillDB } from "../testutils/useDBFill";
+import { isArraySorted } from "../testutils/isAlreadySorted";
+import { CarType } from "../../carshop/model/Car.model";
 
 describe("create car", () => {
   useMongoMemoryServer();
@@ -29,45 +31,41 @@ describe("create car", () => {
 
 describe("remove car", () => {
   useMongoMemoryServer();
-  useDBFill();
-  it("should return removed carId", async () => {
-    // throw Error("test undefined");
-  });
-  it("should return error invalid carId", async () => {
-    // throw Error("test undefined");
-  });
+  fillDB(1);
+  it("should return removed carId", async () => {});
+  it("should return error invalid carId", async () => {});
 });
 
 describe("list cars", () => {
-  useMongoMemoryServer();
-  useDBFill();
-  it("should return car list", async () => {
+  const totalQty = 15;
+  const getData = useMongoMemoryServer(() => fillDB(totalQty));
+  it("should return full car list", async () => {
     const response = await request(app).get("/carshop/cars");
     expect(response.statusCode).toBe(200);
-    expect(response.body).toHaveLength(1);
-
-    // throw Error("test undefined");
+    expect(response.body).toHaveLength(totalQty);
   });
   it("should return car list sorted by price", async () => {
-    // throw Error("test undefined");
-  });
-  it("should return car list sorted by year", async () => {
-    // throw Error("test undefined");
-  });
+    const response = await request(app).get("/carshop/cars?sort=+price");
+    expect(response.statusCode).toBe(200);
+    expect(getData()).toHaveLength(totalQty);
+    expect(response.body).toHaveLength(totalQty);
 
-  it("should return error unsupported sort", async () => {
-    // throw Error("test undefined");
+    const arr = response.body;
+
+    expect(
+      isArraySorted<CarType>(arr, ({ price: A }, { price: B }) => A - B)
+    ).toBe(true);
   });
+  it("should return car list sorted by year", async () => {});
+
+  it("should return error unsupported sort", async () => {});
 });
 
 describe("fetch car by id", () => {
   useMongoMemoryServer();
-  useDBFill();
+  fillDB(5);
   it("should return car", async () => {
     // const response = await request(app).get("/carshop/cars/");
-    // throw Error("test undefined");
   });
-  it("should return error invalid carId", async () => {
-    // throw Error("test undefined");
-  });
+  it("should return error invalid carId", async () => {});
 });

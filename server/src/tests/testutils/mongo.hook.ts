@@ -1,7 +1,7 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 
-export const useMongoMemoryServer = () => {
+export const useMongoMemoryServer = <T>(fillDB?: () => Promise<T>) => {
   let mongod: MongoMemoryServer;
 
   const connect = async () => {
@@ -23,14 +23,18 @@ export const useMongoMemoryServer = () => {
     for (const key in collections) {
       const collection = collections[key];
       try {
-        await collection.deleteMany({ _id: /.*/ });
+        const res = await collection.deleteMany({});
       } catch (err) {
         console.log("collection drop error", collection.collectionName);
       }
     }
   };
-
+  let data: T;
   beforeAll(async () => await connect());
-  beforeEach(async () => await clearDatabase());
+  beforeEach(async () => {
+    await clearDatabase();
+    if (fillDB) data = await fillDB();
+  });
   afterAll(async () => await closeDatabase());
+  return () => data;
 };

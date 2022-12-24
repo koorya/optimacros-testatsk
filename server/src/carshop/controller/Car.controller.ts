@@ -15,13 +15,26 @@ export const addCar: RequestHandler<{}, {}, CarType> = async (
   }
 };
 
-export const listCar: RequestHandler<{ id: string }, {}, {}> = async (
+export const listCar: RequestHandler<{}, {}, {}, { sort?: string }> = async (
   req,
   res,
   next
 ) => {
+  const { sort } = req.query;
+  if (sort) {
+    sort.matchAll(/(\+|\-)?(price|name|year),?/g);
+  }
   try {
-    res.json(await Car.find());
+    const result = await Car.find();
+    res.json(
+      result.map(({ _id, brand, name, price, production_year }) => ({
+        id: _id,
+        brand,
+        name,
+        price,
+        production_year,
+      }))
+    );
   } catch (error) {
     next(error);
   }
