@@ -8,6 +8,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
     ports:
       - 27017:27017
+    volumes:
+      - './mongo_data:/data/db'
   mongo-express:
     image: mongo-express
     restart: always
@@ -19,5 +21,16 @@ services:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
       ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+
+  carshop:
+    build: .
+    restart: always
+    depends_on:
+      - mongo
+    ports:
+      - 5000:5000
+    environment:
+      MONGO_HOST: mongo
+    
 
 
