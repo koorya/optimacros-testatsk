@@ -2,7 +2,7 @@
 
 ### Сервер
 
-    cd client
+    cd server
     npm run upserver
 
 ### Клиент
