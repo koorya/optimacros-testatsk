@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npx tsc --build",
+    "build": "npx tsc --build tsconfig.build.json",
     "start": "node build/",
     "test": "npx jest",
     "dev": "npm run upmongo ; nodemon src/index.ts",
